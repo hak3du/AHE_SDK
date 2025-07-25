@@ -8,10 +8,15 @@ Quantum-Safe, Anomaly-Driven Encryption for the Next Generation
 🚀 Features
 
 ✅ Quantum-Safe (Kyber PQC)
+
 ✅ Adaptive Hashing + Entropy-based Security
+
 ✅ Zero Knowledge Assurance
+
 ✅ Anomaly Detection & Logging
+
 ✅ FastAPI REST API
+
 ✅ Cross-Platform Support (Windows, Linux, macOS)
 
 
