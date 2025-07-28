@@ -1,0 +1,2 @@
+{"timestamp":641,"category":"nimbus_events","name":"enrollment","extra":{"experiment":"phc-rollout","experiment_type":"rollout","branch":"rollout"}}
+{"timestamp":3374,"category":"nimbus_events","name":"exposure","extra":{"branch":"treatment-a","experiment":"firefox-accounts-toolbar-button-default-visibility-new-users-part-3","feature_id":"fxms-message-6"}}
