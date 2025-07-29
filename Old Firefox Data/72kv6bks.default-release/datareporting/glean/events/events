@@ -1,5 +1,0 @@
-{"timestamp":0,"category":"fog.validation","name":"validate_early_event"}
-{"timestamp":273,"category":"webcompatreporting","name":"reason_dropdown","extra":{"setting":"required"}}
-{"timestamp":641,"category":"nimbus_events","name":"enrollment","extra":{"experiment":"phc-rollout","experiment_type":"rollout","branch":"rollout"}}
-{"timestamp":641,"category":"nimbus_events","name":"is_ready"}
-{"timestamp":3374,"category":"nimbus_events","name":"exposure","extra":{"branch":"treatment-a","experiment":"firefox-accounts-toolbar-button-default-visibility-new-users-part-3","feature_id":"fxms-message-6"}}
