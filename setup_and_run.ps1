@@ -1,3 +1,5 @@
+
+=======
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 # setup_and_run.ps1
@@ -64,4 +66,3 @@ catch {
     Write-Host "`n[!] uvicorn failed, trying fallback..."
     & python -m uvicorn web:api --reload
 
-}
