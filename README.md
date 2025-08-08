@@ -43,7 +43,8 @@ AHE_SDK/
 
 1. Clone the Repository
 
-git clone https://github.com/YOUR_USERNAME/AHE_SDK.git
+git clone https://github.com/hak3du/AHE_SDK.git
+
 cd AHE_SDK
 
 2. Create Virtual Environment
@@ -60,7 +61,15 @@ ahe_env\Scripts\activate
 
 pip install -r requirements.txt
 
+### 🔁 Option 1: Auto Setup (Windows - PowerShell)
 
+Run this command from the project root:
+
+powershell
+./setup_end_run.ps1
+
+If powershell refuses enter:
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 ---
 
 ▶ Run the API
@@ -127,3 +136,5 @@ docker run -p 8000:8000 ahe_sdk
 
 ⚠ License: Proprietary – All rights reserved.
 Unauthorized reproduction or distribution is prohibited.
+
+
