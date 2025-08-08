@@ -1,9 +1,9 @@
 # Use a lightweight Python 3.11 base image
 FROM python:3.11-slim
 
-# Install system dependencies for building Python packages and rust
+# Install system dependencies including git
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential gcc libssl-dev pkg-config curl ca-certificates \
+    git build-essential gcc libssl-dev pkg-config curl ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Rust for building native Rust extensions like pydantic-core and liboqs
