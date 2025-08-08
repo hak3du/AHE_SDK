@@ -3,8 +3,8 @@
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'ahe-sdk'
-primary_region = 'jnb'
+app = "ahe-sdk"
+primary_region = "jnb"
 
 [build]
 
