@@ -9,4 +9,7 @@ httpx>=0.24.0
 flask
 flask-cors
 pytest>=7.4.0
+colorama
+
+
 
