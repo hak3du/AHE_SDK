@@ -6,7 +6,7 @@
 app = "ahe-sdk"
 primary_region = "jnb"
 
-[build]
+
 
 [http_service]
   internal_port = 8000
