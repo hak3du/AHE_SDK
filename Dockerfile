@@ -1,9 +1,9 @@
 # Use a lightweight Python 3.11 base image
 FROM python:3.11-slim
 
-# Install system dependencies including git
+# Install system dependencies including cmake and git
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git build-essential gcc libssl-dev pkg-config curl ca-certificates \
+    git build-essential gcc libssl-dev pkg-config curl ca-certificates cmake \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Rust for building native Rust extensions like pydantic-core and liboqs
@@ -21,8 +21,8 @@ RUN pip install --upgrade pip setuptools wheel
 RUN pip install -r requirements.txt
 
 # Clone liboqs and liboqs-python, then install liboqs-python
-RUN git clone https://github.com/open-quantum-safe/liboqs.git && \
-    git clone https://github.com/open-quantum-safe/liboqs-python.git && \
+RUN git clone --depth 1 https://github.com/open-quantum-safe/liboqs.git && \
+    git clone --depth 1 https://github.com/open-quantum-safe/liboqs-python.git && \
     cd liboqs-python && pip install . && cd ..
 
 # Expose port 8000 for your API server
