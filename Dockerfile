@@ -13,20 +13,23 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 # Set working directory inside container
 WORKDIR /app
 
-# Copy your repo files into the container
-COPY . .
-
-# Upgrade pip and install Python dependencies from requirements.txt
-RUN pip install --upgrade pip setuptools wheel
-RUN pip install -r requirements.txt
-
-# Clone liboqs and liboqs-python, then install liboqs-python
+# Clone liboqs and liboqs-python, then install liboqs-python BEFORE copying your app
 RUN git clone --depth 1 https://github.com/open-quantum-safe/liboqs.git && \
     git clone --depth 1 https://github.com/open-quantum-safe/liboqs-python.git && \
     cd liboqs-python && pip install . && cd ..
 
+# Copy your repo files into the container AFTER the above to leverage cache
+COPY . .
+
+# Set default port env variable (Render sets PORT dynamically but this is fallback)
+ENV PORT=8000
+
+# Upgrade pip and install Python dependencies from requirements.txt
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install -r requirements.txt
+
 # Expose port 8000 for your API server
 EXPOSE 8000
 
-# Run your API with uvicorn
-CMD ["sh", "-c", "uvicorn api:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Run your API with uvicorn, binding explicitly to port 8000 (which matches PORT env)
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
