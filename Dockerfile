@@ -29,4 +29,4 @@ RUN git clone --depth 1 https://github.com/open-quantum-safe/liboqs.git && \
 EXPOSE 8000
 
 # Run your API with uvicorn
-CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uvicorn api:app --host 0.0.0.0 --port ${PORT:-8000}"]
