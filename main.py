@@ -4,8 +4,8 @@ from flask import Flask, request, jsonify
 from core.core import encrypt_message, decrypt_latest
 from flask_cors import CORS
 
-app = Flask(__name__)
-CORS(app)  # allow cross-origin access from GitHub Pages
+app = Flask(_name_)
+CORS(app, resources={r"/": {"origins": ""}})  # Allow all origins to fix CORS issues
 
 @app.route("/")
 def home():
@@ -44,5 +44,6 @@ def decrypt():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
 
 
