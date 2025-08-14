@@ -8,7 +8,7 @@ CORS(app, resources={r"/": {"origins": ""}})  # Allow all origins
 # Helper function to add headers for every response
 @app.after_request
 def add_cors_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = '*'  # allow all domains
+    response.headers['Access-Control-Allow-Origin'] = '*'  # allow all domains ans
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
     response.headers['Access-Control-Allow-Credentials'] = 'true'
@@ -57,3 +57,4 @@ def build_cors_preflight_response():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
+
