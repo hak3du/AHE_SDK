@@ -1,12 +1,11 @@
-# main.py
 from flask import Flask, request, jsonify
 from core.core import encrypt_message, decrypt_latest
 from flask_cors import CORS
 
 app = Flask(__name__)
 
-# Enable CORS for all routes and origins
-CORS(app, resources={r"/*": {"origins": "*"}})
+# Allow all origins and methods for all routes
+CORS(app, resources={r"/": {"origins": ""}}, supports_credentials=True, methods=["GET", "POST", "OPTIONS"])
 
 @app.route("/")
 def home():
@@ -44,10 +43,4 @@ def decrypt():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
-
-
-
-
-
-
+    app.run(host="0.0.0.0", port=5000, debug=True)
