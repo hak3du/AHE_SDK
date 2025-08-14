@@ -5,7 +5,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 
 # Allow all origins and methods for all routes
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True, methods=["GET", "POST", "OPTIONS"])
+CORS(app, resources={r"/*": {"origins": "*"}}, methods=["GET", "POST", "OPTIONS"])
 
 @app.route("/")
 def home():
@@ -44,4 +44,5 @@ def decrypt():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
+
 
