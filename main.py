@@ -3,15 +3,13 @@ from core.core import encrypt_message, decrypt_latest
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, resources={r"/": {"origins": ""}})  # Allow all origins
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
-# Helper function to add headers for every response
 @app.after_request
 def add_cors_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = '*'  # allow all domains
+    response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-    response.headers['Access-Control-Allow-Credentials'] = 'true'
     return response
 
 @app.route("/")
@@ -52,7 +50,6 @@ def build_cors_preflight_response():
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-    response.headers['Access-Control-Allow-Credentials'] = 'true'
     return response
 
 if __name__ == "__main__":
