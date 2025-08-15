@@ -1,26 +1,9 @@
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 from core.core import encrypt_message, decrypt_latest
 
 app = Flask(__name__)
-
-# Universal CORS headers function
-def set_cors_headers(resp):
-    resp.headers['Access-Control-Allow-Origin'] = '*'  # allow all domains
-    resp.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-    resp.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-    resp.headers['Access-Control-Allow-Credentials'] = 'true'
-    return resp
-
-# Handle preflight globally
-@app.before_request
-def handle_options_requests():
-    if request.method == 'OPTIONS':
-        resp = make_response()
-        return set_cors_headers(resp)
-
-@app.after_request
-def apply_cors_headers(response):
-    return set_cors_headers(response)
+CORS(app)  # Enable CORS for all routes
 
 @app.route("/")
 def home():
@@ -30,10 +13,15 @@ def home():
 def encrypt():
     try:
         data = request.get_json()
+        if not data:
+            return jsonify({"error": "Invalid JSON payload."}), 400
+
         message = data.get("message")
         password = data.get("password")
         if not message or not password:
             return jsonify({"error": "Message and password are required."}), 400
+
+        # Call the encryption function
         encrypted = encrypt_message(message, password)
         return jsonify({"encrypted": encrypted})
     except Exception as e:
@@ -43,9 +31,14 @@ def encrypt():
 def decrypt():
     try:
         data = request.get_json()
+        if not data:
+            return jsonify({"error": "Invalid JSON payload."}), 400
+
         password = data.get("password")
         if not password:
             return jsonify({"error": "Password is required."}), 400
+
+        # Call the decryption function
         decrypted = decrypt_latest(password)
         return jsonify({"decrypted": decrypted})
     except Exception as e:
