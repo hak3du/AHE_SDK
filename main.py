@@ -1,11 +1,21 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from core.core import encrypt_message, decrypt_latest
 
 app = Flask(__name__)
 
-# Enable CORS for all routes
-CORS(app, resources={r"/*": {"origins": ["https://hak3du.github.io"]}})
+# Enable CORS for all routes and allow requests from your front-end origin
+CORS(app, resources={r"/*": {"origins": ["https://hak3du.github.io"]}}, supports_credentials=True)
+
+@app.before_request
+def handle_options_request():
+    if request.method == "OPTIONS":
+        response = make_response()
+        response.headers.add("Access-Control-Allow-Origin", "https://hak3du.github.io")
+        response.headers.add("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        response.headers.add("Access-Control-Allow-Credentials", "true")
+        return response, 200
 
 @app.route("/")
 def home():
