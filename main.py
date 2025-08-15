@@ -3,7 +3,9 @@ from flask_cors import CORS
 from core.core import encrypt_message, decrypt_latest
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+
+# Enable CORS for all routes
+CORS(app, resources={r"/*": {"origins": ["https://hak3du.github.io"]}})
 
 @app.route("/")
 def home():
@@ -22,8 +24,19 @@ def encrypt():
             return jsonify({"error": "Message and password are required."}), 400
 
         # Call the encryption function
-        encrypted = encrypt_message(message, password)
-        return jsonify({"encrypted": encrypted})
+        encrypted_data = encrypt_message(message, password)
+
+        # Example: Add additional fields to the response
+        response = {
+            "status": "success",
+            "encrypted": encrypted_data.get("ciphertext"),
+            "ciphertext_path": encrypted_data.get("ciphertext_path"),
+            "metadata_path": encrypted_data.get("metadata_path"),
+            "pqc_profile": encrypted_data.get("pqc_profile"),
+            "entropy_score": encrypted_data.get("entropy_score"),
+            "anomaly_detected": encrypted_data.get("anomaly_detected", False)
+        }
+        return jsonify(response)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -39,8 +52,16 @@ def decrypt():
             return jsonify({"error": "Password is required."}), 400
 
         # Call the decryption function
-        decrypted = decrypt_latest(password)
-        return jsonify({"decrypted": decrypted})
+        decrypted_data = decrypt_latest(password)
+
+        # Example: Add additional fields to the response
+        response = {
+            "status": "success",
+            "decrypted": decrypted_data.get("plaintext"),
+            "entropy_score": decrypted_data.get("entropy_score"),
+            "anomaly_detected": decrypted_data.get("anomaly_detected", False)
+        }
+        return jsonify(response)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
