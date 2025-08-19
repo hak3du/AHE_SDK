@@ -7,7 +7,7 @@ import os
 app = Flask(__name__, static_folder="frontend", static_url_path="")
 
 # Enable CORS for API calls
-CORS(app, resources={r"/encrypt": {"origins": ""}, r"/decrypt": {"origins": ""}})
+CORS(app, resources={r"/encrypt": {"origins": "*"}, r"/decrypt": {"origins": "*"}})
 
 # ---------------------------
 # SERVE FRONTEND
