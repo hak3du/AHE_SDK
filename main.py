@@ -1,18 +1,15 @@
-# main.py
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, send_from_directory
 from flask_cors import CORS
 from core.core import encrypt_message, decrypt_latest
 import os
 
-app = Flask(__name__)
+# Initialize Flask with frontend folder
+app = Flask(__name__, static_folder="frontend", static_url_path="/frontend")
 
 # ---------------------------
 # GLOBAL CORS CONFIG
 # ---------------------------
-# Allow all routes, all methods, all headers
-# For credentials: set to True if you need cookies/auth headers
-# If True, DO NOT use "*" for origins; set your frontend domain instead
-FRONTEND_DOMAIN = "https://hak3du.github.io"
+FRONTEND_DOMAIN = ""  # use "" for simplicity since front-end will be served by Flask
 
 CORS(
     app,
@@ -39,13 +36,13 @@ def handle_options():
 # ROUTES
 # ---------------------------
 @app.route("/")
-def home():
-    return jsonify({"message": "AHE API is running."})
+def serve_frontend():
+    # Serve frontend/index.html for root
+    return send_from_directory(app.static_folder, "index.html")
 
 @app.route("/encrypt", methods=["POST", "OPTIONS"])
 def encrypt():
     if request.method == "OPTIONS":
-        # OPTIONS handled globally via before_request, just in case
         response = make_response()
         response.headers.add("Access-Control-Allow-Origin", FRONTEND_DOMAIN)
         response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -64,7 +61,6 @@ def encrypt():
             return jsonify({"error": "Message and password are required."}), 400
 
         encrypted_data = encrypt_message(message, password)
-
         response = {
             "status": "success",
             "encrypted": encrypted_data.get("ciphertext"),
@@ -98,7 +94,6 @@ def decrypt():
             return jsonify({"error": "Password is required."}), 400
 
         decrypted_data = decrypt_latest(password)
-
         response = {
             "status": "success",
             "decrypted": decrypted_data.get("plaintext"),
