@@ -3,21 +3,14 @@ from flask_cors import CORS
 from core.core import encrypt_message, decrypt_latest
 import os
 
-# Initialize Flask with frontend folder
-app = Flask(__name__, static_folder="frontend", static_url_path="/frontend")
+# Initialize Flask app with frontend folder
+app = Flask(__name__, static_folder="frontend", static_url_path="")
 
 # ---------------------------
 # GLOBAL CORS CONFIG
 # ---------------------------
-FRONTEND_DOMAIN = ""  # use "" for simplicity since front-end will be served by Flask
-
-CORS(
-    app,
-    resources={r"/*": {"origins": FRONTEND_DOMAIN}},
-    supports_credentials=True,
-    allow_headers=["Content-Type", "Authorization"],
-    methods=["GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH"]
-)
+# Since front-end is served by Flask, allow all origins
+CORS(app, resources={r"/": {"origins": ""}}, supports_credentials=True)
 
 # ---------------------------
 # HANDLE PRE-FLIGHT OPTIONS
@@ -26,29 +19,27 @@ CORS(
 def handle_options():
     if request.method == "OPTIONS":
         response = make_response()
-        response.headers.add("Access-Control-Allow-Origin", FRONTEND_DOMAIN)
+        response.headers.add("Access-Control-Allow-Origin", "*")
         response.headers.add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,DELETE,PATCH")
         response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
         response.headers.add("Access-Control-Allow-Credentials", "true")
         return response, 200
 
 # ---------------------------
-# ROUTES
+# SERVE FRONT-END
 # ---------------------------
 @app.route("/")
 def serve_frontend():
     # Serve frontend/index.html for root
     return send_from_directory(app.static_folder, "index.html")
 
+# ---------------------------
+# API ROUTES
+# ---------------------------
 @app.route("/encrypt", methods=["POST", "OPTIONS"])
 def encrypt():
     if request.method == "OPTIONS":
-        response = make_response()
-        response.headers.add("Access-Control-Allow-Origin", FRONTEND_DOMAIN)
-        response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
-        response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
-        response.headers.add("Access-Control-Allow-Credentials", "true")
-        return response, 200
+        return handle_options()
 
     try:
         data = request.get_json()
@@ -77,12 +68,7 @@ def encrypt():
 @app.route("/decrypt", methods=["POST", "OPTIONS"])
 def decrypt():
     if request.method == "OPTIONS":
-        response = make_response()
-        response.headers.add("Access-Control-Allow-Origin", FRONTEND_DOMAIN)
-        response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
-        response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
-        response.headers.add("Access-Control-Allow-Credentials", "true")
-        return response, 200
+        return handle_options()
 
     try:
         data = request.get_json()
