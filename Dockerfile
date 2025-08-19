@@ -32,4 +32,4 @@ RUN pip install --upgrade pip setuptools wheel && \
 EXPOSE 8000
 
 # Run your API with uvicorn, binding explicitly to port 8000 (which matches PORT env)
-CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python","main.py"]
