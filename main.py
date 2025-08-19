@@ -6,10 +6,10 @@ import os
 # ---------------------------
 # Initialize Flask
 # ---------------------------
-app = Flask(__name__, static_folder="frontend", static_url_path="")
+app = Flask(__name__, static_folder="frontend", static_url_path="/frontend")
 
 # Enable CORS for API calls
-CORS(app, resources={r"/encrypt": {"origins": "*"}, r"/decrypt": {"origins": ""}})
+CORS(app, resources={r"/encrypt": {"origins": ""}, r"/decrypt": {"origins": ""}})
 
 # ---------------------------
 # SERVE FRONTEND
@@ -18,10 +18,11 @@ CORS(app, resources={r"/encrypt": {"origins": "*"}, r"/decrypt": {"origins": ""}
 @app.route("/<path:path>")
 def serve_frontend(path):
     """
-    Serve index.html for root or any unmatched route
-    so your frontend JS can handle routing internally if needed.
+    Serve index.html for root or any unmatched route,
+    so your frontend JS can handle routing internally.
     """
-    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
+    full_path = os.path.join(app.static_folder, path)
+    if path != "" and os.path.exists(full_path):
         return send_from_directory(app.static_folder, path)
     else:
         return send_from_directory(app.static_folder, "index.html")
@@ -60,4 +61,3 @@ def decrypt():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
-
