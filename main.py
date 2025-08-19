@@ -1,28 +1,36 @@
-from flask import Flask, request, jsonify, make_response, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, make_response
 from flask_cors import CORS
 from core.core import encrypt_message, decrypt_latest
 import os
 
-# Initialize Flask app with frontend folder
+# ---------------------------
+# Initialize Flask
+# ---------------------------
 app = Flask(__name__, static_folder="frontend", static_url_path="")
 
-# Enable CORS globally
-CORS(app, resources={r"/": {"origins": ""}}, supports_credentials=True)
+# Enable CORS for API calls
+CORS(app, resources={r"/encrypt": {"origins": ""}, r"/decrypt": {"origins": ""}})
 
 # ---------------------------
 # SERVE FRONTEND
 # ---------------------------
-@app.route("/")
-def serve_frontend():
-    return send_from_directory(app.static_folder, "index.html")
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve_frontend(path):
+    """
+    Serve index.html for root or any unmatched route
+    so your frontend JS can handle routing internally if needed.
+    """
+    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.static_folder, "index.html")
 
 # ---------------------------
 # API ROUTES
 # ---------------------------
-@app.route("/encrypt", methods=["POST", "OPTIONS"])
+@app.route("/encrypt", methods=["POST"])
 def encrypt():
-    if request.method == "OPTIONS":
-        return build_cors_preflight_response()
     try:
         data = request.get_json()
         message = data.get("message")
@@ -34,11 +42,8 @@ def encrypt():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-@app.route("/decrypt", methods=["POST", "OPTIONS"])
+@app.route("/decrypt", methods=["POST"])
 def decrypt():
-    if request.method == "OPTIONS":
-        return build_cors_preflight_response()
     try:
         data = request.get_json()
         password = data.get("password")
@@ -48,19 +53,6 @@ def decrypt():
         return jsonify({"decrypted": decrypted})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
-# ---------------------------
-# CORS Preflight Response
-# ---------------------------
-def build_cors_preflight_response():
-    response = make_response()
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-    response.headers['Access-Control-Allow-Credentials'] = 'true'
-    return response
-
 
 # ---------------------------
 # RUN SERVER
