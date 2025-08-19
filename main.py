@@ -1,3 +1,4 @@
+# main.py
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from core.core import encrypt_message, decrypt_latest
@@ -6,38 +7,52 @@ import os
 app = Flask(__name__)
 
 # ---------------------------
-# FORCE CORS: allow all origins, all methods, all headers
+# GLOBAL CORS CONFIG
 # ---------------------------
+# Allow all routes, all methods, all headers
+# For credentials: set to True if you need cookies/auth headers
+# If True, DO NOT use "*" for origins; set your frontend domain instead
+FRONTEND_DOMAIN = "https://hak3du.github.io"
+
 CORS(
     app,
-    resources={r"/": {"origins": ""}},
+    resources={r"/*": {"origins": FRONTEND_DOMAIN}},
     supports_credentials=True,
-    allow_headers="*",
-    methods=["GET","POST","OPTIONS","PUT","DELETE","PATCH"]
+    allow_headers=["Content-Type", "Authorization"],
+    methods=["GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH"]
 )
 
 # ---------------------------
-# Handle OPTIONS requests manually (preflight)
+# HANDLE PRE-FLIGHT OPTIONS
 # ---------------------------
 @app.before_request
 def handle_options():
     if request.method == "OPTIONS":
         response = make_response()
-        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Origin", FRONTEND_DOMAIN)
         response.headers.add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,DELETE,PATCH")
-        response.headers.add("Access-Control-Allow-Headers", "*")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
         response.headers.add("Access-Control-Allow-Credentials", "true")
         return response, 200
 
 # ---------------------------
-# Routes
+# ROUTES
 # ---------------------------
 @app.route("/")
 def home():
     return jsonify({"message": "AHE API is running."})
 
-@app.route("/encrypt", methods=["POST"])
+@app.route("/encrypt", methods=["POST", "OPTIONS"])
 def encrypt():
+    if request.method == "OPTIONS":
+        # OPTIONS handled globally via before_request, just in case
+        response = make_response()
+        response.headers.add("Access-Control-Allow-Origin", FRONTEND_DOMAIN)
+        response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        response.headers.add("Access-Control-Allow-Credentials", "true")
+        return response, 200
+
     try:
         data = request.get_json()
         if not data:
@@ -63,8 +78,16 @@ def encrypt():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route("/decrypt", methods=["POST"])
+@app.route("/decrypt", methods=["POST", "OPTIONS"])
 def decrypt():
+    if request.method == "OPTIONS":
+        response = make_response()
+        response.headers.add("Access-Control-Allow-Origin", FRONTEND_DOMAIN)
+        response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
+        response.headers.add("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        response.headers.add("Access-Control-Allow-Credentials", "true")
+        return response, 200
+
     try:
         data = request.get_json()
         if not data:
@@ -87,7 +110,7 @@ def decrypt():
         return jsonify({"error": str(e)}), 500
 
 # ---------------------------
-# Run server
+# RUN SERVER
 # ---------------------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
