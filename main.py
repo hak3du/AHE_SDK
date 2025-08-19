@@ -1,23 +1,24 @@
-from flask import Flask, request, jsonify, make_response
-from core.core import encrypt_message, decrypt_latest
+from flask import Flask, request, jsonify, make_response, send_from_directory
 from flask_cors import CORS
+from core.core import encrypt_message, decrypt_latest
+import os
 
-app = Flask(__name__)
-CORS(app, resources={r"/": {"origins": ""}})  # Allow all origins
+# Initialize Flask app with frontend folder
+app = Flask(__name__, static_folder="frontend", static_url_path="")
 
-# Helper function to add headers for every response
-@app.after_request
-def add_cors_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = '*'  # allow all domains
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
-    response.headers['Access-Control-Allow-Credentials'] = 'true'
-    return response
+# Enable CORS globally
+CORS(app, resources={r"/": {"origins": ""}}, supports_credentials=True)
 
+# ---------------------------
+# SERVE FRONTEND
+# ---------------------------
 @app.route("/")
-def home():
-    return jsonify({"message": "AHE API is running."})
+def serve_frontend():
+    return send_from_directory(app.static_folder, "index.html")
 
+# ---------------------------
+# API ROUTES
+# ---------------------------
 @app.route("/encrypt", methods=["POST", "OPTIONS"])
 def encrypt():
     if request.method == "OPTIONS":
@@ -33,6 +34,7 @@ def encrypt():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
 @app.route("/decrypt", methods=["POST", "OPTIONS"])
 def decrypt():
     if request.method == "OPTIONS":
@@ -47,6 +49,10 @@ def decrypt():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+# ---------------------------
+# CORS Preflight Response
+# ---------------------------
 def build_cors_preflight_response():
     response = make_response()
     response.headers['Access-Control-Allow-Origin'] = '*'
@@ -55,5 +61,10 @@ def build_cors_preflight_response():
     response.headers['Access-Control-Allow-Credentials'] = 'true'
     return response
 
+
+# ---------------------------
+# RUN SERVER
+# ---------------------------
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
