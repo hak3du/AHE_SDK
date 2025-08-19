@@ -3,7 +3,10 @@ from flask_cors import CORS
 from core.core import encrypt_message, decrypt_latest
 import os
 
-app = Flask(__name__, static_folder="frontend", static_url_path="")  # static_path empty
+# Initialize Flask with frontend folder
+app = Flask(__name__, static_folder="frontend", static_url_path="")
+
+# Enable CORS for API calls
 CORS(app, resources={r"/encrypt": {"origins": "*"}, r"/decrypt": {"origins": "*"}})
 
 # Serve frontend files
@@ -42,5 +45,6 @@ def decrypt():
 # RUN SERVER
 # ---------------------------
 if __name__ == "__main__":
+    # Use Railway-assigned PORT or fallback
     port = int(os.environ.get("PORT", 8000))
     app.run(host="0.0.0.0", port=port, debug=True)
