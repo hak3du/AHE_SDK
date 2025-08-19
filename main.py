@@ -1,20 +1,33 @@
-# main.py
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from core.core import encrypt_message, decrypt_latest
 import os
 
-# Initialize Flask app
 app = Flask(__name__)
 
 # ---------------------------
-# CORS Setup
+# FORCE CORS: allow all origins, all methods, all headers
 # ---------------------------
-# Allow only your portfolio domain, enable credentials, force headers and methods
-CORS(app, resources={r"/*": {"origins": ["https://hak3du.github.io"]}}, 
-     supports_credentials=True, 
-     allow_headers=["Content-Type", "Authorization"], 
-     methods=["GET", "POST", "OPTIONS"])
+CORS(
+    app,
+    resources={r"/": {"origins": ""}},
+    supports_credentials=True,
+    allow_headers="*",
+    methods=["GET","POST","OPTIONS","PUT","DELETE","PATCH"]
+)
+
+# ---------------------------
+# Handle OPTIONS requests manually (preflight)
+# ---------------------------
+@app.before_request
+def handle_options():
+    if request.method == "OPTIONS":
+        response = make_response()
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        response.headers.add("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,DELETE,PATCH")
+        response.headers.add("Access-Control-Allow-Headers", "*")
+        response.headers.add("Access-Control-Allow-Credentials", "true")
+        return response, 200
 
 # ---------------------------
 # Routes
@@ -35,7 +48,6 @@ def encrypt():
         if not message or not password:
             return jsonify({"error": "Message and password are required."}), 400
 
-        # Call encryption logic from core
         encrypted_data = encrypt_message(message, password)
 
         response = {
@@ -49,7 +61,7 @@ def encrypt():
         }
         return jsonify(response)
     except Exception as e:
-        return jsonify({"error": "Internal server error."}), 500
+        return jsonify({"error": str(e)}), 500
 
 @app.route("/decrypt", methods=["POST"])
 def decrypt():
@@ -62,7 +74,6 @@ def decrypt():
         if not password:
             return jsonify({"error": "Password is required."}), 400
 
-        # Call decryption logic from core
         decrypted_data = decrypt_latest(password)
 
         response = {
@@ -73,12 +84,11 @@ def decrypt():
         }
         return jsonify(response)
     except Exception as e:
-        return jsonify({"error": "Internal server error."}), 500
+        return jsonify({"error": str(e)}), 500
 
 # ---------------------------
 # Run server
 # ---------------------------
 if __name__ == "__main__":
-    # Use Railway dynamic PORT if available
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
