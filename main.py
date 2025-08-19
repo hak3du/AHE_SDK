@@ -7,9 +7,11 @@ import os
 app = Flask(__name__, static_folder="frontend", static_url_path="")
 
 # Enable CORS for API calls
-CORS(app, resources={r"/encrypt": {"origins": "*"}, r"/decrypt": {"origins": "*"}})
+CORS(app, resources={r"/encrypt": {"origins": ""}, r"/decrypt": {"origins": ""}})
 
-# Serve frontend files
+# ---------------------------
+# SERVE FRONTEND
+# ---------------------------
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def serve_frontend(path):
@@ -17,6 +19,7 @@ def serve_frontend(path):
     if path != "" and os.path.exists(full_path):
         return send_from_directory(app.static_folder, path)
     else:
+        # fallback to index.html for any unmatched route
         return send_from_directory(app.static_folder, "index.html")
 
 # ---------------------------
@@ -45,6 +48,5 @@ def decrypt():
 # RUN SERVER
 # ---------------------------
 if __name__ == "__main__":
-    # Use Railway-assigned PORT or fallback
-    port = int(os.environ.get("PORT", 8000))
+    port = int(os.environ.get("PORT", 8000))  # use Railway's dynamic PORT
     app.run(host="0.0.0.0", port=port, debug=True)
