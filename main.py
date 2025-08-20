@@ -1,19 +1,15 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from core.core import encrypt_message, decrypt_latest
-import os
 
-# Initialize Flask — only templates folder matters now
-app = Flask(__name__, template_folder="templates")
-
-# Enable CORS globally
+app = Flask(__name__, template_folder="templates")  # templates folder for index.html
 CORS(app, resources={r"/encrypt": {"origins": "*"}, r"/decrypt": {"origins": "*"}})
 
-# Serve frontend (now only templates/index.html)
+# Serve frontend
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def serve_frontend(path):
-    return render_template("index.html")
+    return render_template("index.html")  # Always render index.html
 
 # ---------------------------
 # API ROUTES
@@ -38,16 +34,18 @@ def decrypt():
     return jsonify({"decrypted": decrypted})
 
 # ---------------------------
-# DEBUG: confirm templates
+# DEBUG: Confirm templates exist
 # ---------------------------
-@app.route("/debug-templates")
-def debug_templates():
-    files = [f for f in os.listdir("templates") if os.path.isfile(os.path.join("templates", f))]
+@app.route("/debug-files")
+def debug_files():
+    import os
+    files = [f for f in os.listdir(app.template_folder)]
     return jsonify({"templates": files})
 
 # ---------------------------
 # RUN SERVER
 # ---------------------------
 if __name__ == "__main__":
+    import os
     port = int(os.environ.get("PORT", 8000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(host="0.0.0.0", port=port)
