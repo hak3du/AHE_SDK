@@ -1,3 +1,4 @@
+
 # Use a lightweight Python 3.11 base image
 FROM python:3.11-slim
 
@@ -29,4 +30,4 @@ RUN git clone https://github.com/open-quantum-safe/liboqs.git && \
 EXPOSE 8000
 
 # Run your API with Gunicorn (production-ready)
-CMD ["sh", "-c", "gunicorn main:app --bind 0.0.0.0:${PORT:-8000}"]
+CMD ["gunicorn", "api:app", "--bind", "0.0.0.0:8000"]
