@@ -25,11 +25,8 @@ RUN git clone https://github.com/open-quantum-safe/liboqs.git && \
     git clone https://github.com/open-quantum-safe/liboqs-python.git && \
     cd liboqs-python && pip install . && cd ..
 
-# Install Gunicorn at the very end
-RUN pip install gunicorn
-
 # Expose port 8000 for your API server
 EXPOSE 8000
 
 # Run your API with Gunicorn (production-ready)
-CMD ["gunicorn", "api:app", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "main:app", "--bind", "0.0.0.0:$PORT"]
