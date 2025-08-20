@@ -6,17 +6,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git build-essential gcc libssl-dev pkg-config curl ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Rust for building native Rust extensions
+# Install Rust for building native Rust extensions like pydantic-core and liboqs
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Set working directory inside container
 WORKDIR /app
 
-# Copy your repository files into the container (including templates/)
+# Copy your repo files into the container
 COPY . .
 
-# Upgrade pip and install Python dependencies
+# Upgrade pip and install Python dependencies from requirements.txt
 RUN pip install --upgrade pip setuptools wheel
 RUN pip install -r requirements.txt
 
@@ -25,12 +25,11 @@ RUN git clone https://github.com/open-quantum-safe/liboqs.git && \
     git clone https://github.com/open-quantum-safe/liboqs-python.git && \
     cd liboqs-python && pip install . && cd ..
 
-# Install Gunicorn
+# Install Gunicorn at the very end
 RUN pip install gunicorn
 
 # Expose port 8000 for your API server
 EXPOSE 8000
-ENV PORT=8000
 
-# Run your API with Gunicorn
-CMD ["sh", "-c", "gunicorn main:app --bind 0.0.0.0:$PORT"]
+# Run your API with Gunicorn (production-ready)
+CMD ["gunicorn", "api:app", "--bind", "0.0.0.0:8000"]
