@@ -32,4 +32,4 @@ ENV PORT=8000
 EXPOSE 8000
 
 # Use Gunicorn for production Flask serving
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "main:app"]
+CMD ["sh", "-c", "gunicorn main:app --bind 0.0.0.0:$PORT"]
