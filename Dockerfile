@@ -18,16 +18,16 @@ RUN git clone --depth 1 https://github.com/open-quantum-safe/liboqs.git && \
     git clone --depth 1 https://github.com/open-quantum-safe/liboqs-python.git && \
     cd liboqs-python && pip install . && cd ..
 
-# Copy the entire repository, including frontend, into the container
+# Copy the entire repository into the container (includes templates folder)
 COPY . .
 
-# Upgrade pip and install Python dependencies from requirements.txt
+# Upgrade pip and install Python dependencies
 RUN pip install --upgrade pip setuptools wheel && \
     pip install -r requirements.txt
 
-# Expose the port that Railway will use (default fallback 8000)
+# Expose the port that Railway will use
 ENV PORT=8000
 EXPOSE 8000
 
-# Run your Flask app
+# Run the Flask app
 CMD ["python", "main.py"]
