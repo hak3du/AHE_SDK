@@ -29,4 +29,4 @@ RUN git clone https://github.com/open-quantum-safe/liboqs.git && \
 EXPOSE 8000
 
 # Run your API with Gunicorn (production-ready)
-CMD ["gunicorn", "main:app", "--bind", "0.0.0.0:$PORT"]
+CMD ["sh", "-c", "gunicorn main:app --bind 0.0.0.0:${PORT:-8000}"]
