@@ -27,5 +27,6 @@ RUN git clone https://github.com/open-quantum-safe/liboqs.git && \
 
 # Expose port 8000 for your API server
 EXPOSE 8000
-# Use Gunicorn to serve Flask API
-CMD ["gunicorn", "main:app", "--bind", "0.0.0.0:8000"]
+
+# Run your API with uvicorn
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
