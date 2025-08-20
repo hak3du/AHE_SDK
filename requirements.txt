@@ -10,4 +10,5 @@ flask
 flask-cors
 pytest>=7.4.0
 colorama
+gunicorn>=20.1.0
 
