@@ -18,6 +18,8 @@ RUN git clone --depth 1 https://github.com/open-quantum-safe/liboqs.git && \
     git clone --depth 1 https://github.com/open-quantum-safe/liboqs-python.git && \
     cd liboqs-python && pip install . && cd ..
 
+RUN pip install gunicorn
+
 # Copy repository files (including templates/)
 COPY . .
 
