@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from core.core import encrypt_message, decrypt_latest
 from logger import logger
 from schemas import (
@@ -23,7 +24,7 @@ app = FastAPI(
 # ---------------------------
 # CORS CONFIGURATION
 # ---------------------------
-# Allow any origin (so JS can call from anywhere, including local HTML)
+# Allow any origin
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -50,6 +51,16 @@ def custom_openapi():
 app.openapi = custom_openapi
 
 # ---------------------------
+# SERVE INDEX.HTML FROM TEMPLATES
+# ---------------------------
+@app.get("/", include_in_schema=False)
+async def serve_index():
+    index_path = os.path.join("templates", "index.html")
+    if os.path.isfile(index_path):
+        return FileResponse(index_path)
+    raise HTTPException(status_code=404, detail="index.html not found")
+
+# ---------------------------
 # HEALTH CHECK
 # ---------------------------
 @app.get("/health", response_model=HealthResponse)
@@ -64,10 +75,9 @@ async def encrypt(req: EncryptRequest):
     try:
         logger.info("[ENCRYPT] Processing request...")
         data = encrypt_message(req.message, req.password)
-        # Match exactly what JS expects
         return {
             "status": "success",
-            "encrypted": data.get("ciphertext_path"),  # this is what JS reads
+            "encrypted": data.get("ciphertext_path"),
         }
     except Exception as e:
         logger.error(f"[ENCRYPT ERROR] {str(e)}")
@@ -78,7 +88,6 @@ async def decrypt(req: DecryptRequest):
     try:
         logger.info("[DECRYPT] Processing request...")
         data = decrypt_latest(req.password)
-        # Match exactly what JS expects
         return {
             "status": "success",
             "decrypted": data.get("decrypted_message"),
