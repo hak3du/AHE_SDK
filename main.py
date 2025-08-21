@@ -14,6 +14,18 @@ def serve_frontend(path):
 # ---------------------------
 # API ROUTES
 # ---------------------------
+# ---------------------------
+# DEBUG: Confirm templates exist
+# ---------------------------
+@app.route("/debug-files")
+def debug_files():
+    import os
+    files = {}
+    if os.path.exists(app.template_folder):
+        files['templates'] = os.listdir(app.template_folder)
+    else:
+        files['templates'] = "Template folder not found"
+    return jsonify(files)
 @app.route("/encrypt", methods=["POST"])
 def encrypt():
     data = request.get_json()
@@ -49,3 +61,4 @@ if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", 8000))
     app.run(host="0.0.0.0", port=port)
+
