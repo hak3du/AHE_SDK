@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2485,8 +2483,7 @@ Blind: Most encryption doesn’t notice when it's being attacked — it just enc
   }
 
   setTimeout(loadLiveNews, 300);
-})();
-const API_BASE = "/"; // relative path to Flask APIi
+})();const API_BASE = "https://gracious-eagerness-production-bb80.up.railway.app/"; // your API URL
 
 async function encryptMessage() {
     const message = document.getElementById('encrypt-message').value.trim();
@@ -2514,8 +2511,8 @@ async function encryptMessage() {
         } else {
             resultElement.innerText = `
 Status: ${data.status}
-Encrypted: ${data.encrypted}`;
-            document.getElementById('decrypt-message').value = data.encrypted;
+Encrypted: ${data.ciphertext_path}`;
+            document.getElementById('decrypt-message').value = data.ciphertext_path;
         }
     } catch (err) {
         resultElement.innerText = `Fetch error: ${err.message}`;
@@ -2537,7 +2534,7 @@ async function decryptMessage() {
         const res = await fetch(`${API_BASE}/decrypt`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body:`${JSON.stringify({ password })}`
+            body: JSON.stringify({ password }) // fixed backtick issue
         });
 
         const data = await res.json();
@@ -2545,8 +2542,9 @@ async function decryptMessage() {
         if (data.error) {
             resultElement.innerText = `Error: ${data.error}`;
         } else {
-            resultElement.innerText =`Status: ${data.status}
-Decrypted: ${data.decrypted}`;
+            resultElement.innerText = `
+Status: ${data.status}
+Decrypted: ${data.decrypted_message}`;
         }
     } catch (err) {
         resultElement.innerText = `Fetch error: ${err.message}`;
