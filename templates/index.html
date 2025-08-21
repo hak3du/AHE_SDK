@@ -2513,11 +2513,13 @@ async function encryptMessage() {
             resultElement.innerText = `Error: ${data.detail || data.error}`;
             return;
         }
-
-        resultElement.innerText = `
+resultElement.innerText = `
 Status: ${data.status}
-Encrypted: ${data.encrypted}`;
-
+Encrypted: ${data.ciphertext}
+Metadata: ${data.metadata_path}
+PQC: ${data.pqc_profile}
+Entropy: ${data.entropy_score}
+Anomaly: ${data.anomaly_detected}`;
         // Store encrypted text for decrypting
         document.getElementById('decrypt-message').value = data.encrypted;
 
@@ -2552,10 +2554,9 @@ async function decryptMessage() {
             return;
         }
 
-        resultElement.innerText = `
+   resultElement.innerText = `
 Status: ${data.status}
-Decrypted: ${data.decrypted}`;
-
+Decrypted: ${data.decrypted_message || data.decrypted}`
     } catch (err) {
         resultElement.innerText = `Fetch error: ${err.message}`;
     }
