@@ -24,7 +24,6 @@ app = FastAPI(
 # ---------------------------
 # CORS CONFIGURATION
 # ---------------------------
-# Allow any origin
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -75,10 +74,15 @@ async def encrypt(req: EncryptRequest):
     try:
         logger.info("[ENCRYPT] Processing request...")
         data = encrypt_message(req.message, req.password)
+
+        # ---- ADDITION: Map key to match frontend ----
+        encrypted_path = data.get("ciphertext")
+
         return {
             "status": "success",
-            "encrypted": data.get("ciphertext_path"),
+            "encrypted": encrypted_path,
         }
+        # ---------------------------------------------
     except Exception as e:
         logger.error(f"[ENCRYPT ERROR] {str(e)}")
         raise HTTPException(status_code=500, detail="Encryption failed")
@@ -88,10 +92,15 @@ async def decrypt(req: DecryptRequest):
     try:
         logger.info("[DECRYPT] Processing request...")
         data = decrypt_latest(req.password)
+
+        # ---- ADDITION: Map key to match frontend ----
+        decrypted_msg = data.get("decrypted_message") or data.get("decrypted")
+
         return {
             "status": "success",
-            "decrypted": data.get("decrypted_message"),
+            "decrypted": decrypted_msg,
         }
+        # ---------------------------------------------
     except Exception as e:
         logger.error(f"[DECRYPT ERROR] {str(e)}")
         raise HTTPException(status_code=500, detail="Decryption failed")
