@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from core.core import encrypt_message, decrypt_latest
 from logger import logger
 from schemas import (
@@ -9,6 +11,7 @@ from schemas import (
     DecryptResponse,
     HealthResponse
 )
+import os
 
 # ---------------------------
 # FASTAPI APP
@@ -20,13 +23,9 @@ app = FastAPI(
 )
 
 # ---------------------------
-# CORS CONFIGURATION
+# CORS CONFIGURATION (Universal)
 # ---------------------------
-# Add all frontend domains you want to allow
-origins = [
-    "http://localhost:3000",               # your local HTML
-    "https://your-frontend-domain.com"    # hosted frontend domain
-]
+origins = ["*"]  # Allow all origins for testing; can replace with specific domains later
 
 app.add_middleware(
     CORSMiddleware,
@@ -52,6 +51,22 @@ def custom_openapi():
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 app.openapi = custom_openapi
+
+# ---------------------------
+# STATIC FILES / TEMPLATES
+# ---------------------------
+# Serve static assets if you have them in templates/static
+if os.path.isdir("templates/static"):
+    app.mount("/static", StaticFiles(directory="templates/static"), name="static")
+
+@app.get("/", response_class=HTMLResponse)
+async def serve_index():
+    index_path = os.path.join("templates", "index.html")
+    if os.path.isfile(index_path):
+        with open(index_path, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read(), status_code=200)
+    else:
+        return HTMLResponse(content="index.html not found", status_code=404)
 
 # ---------------------------
 # HEALTH CHECK
@@ -99,10 +114,8 @@ async def decrypt(req: DecryptRequest):
 # ---------------------------
 # DEBUG ROUTE
 # ---------------------------
-import os
 @app.get("/debug-files")
 async def debug_files():
-    # Check for templates folder (even if FastAPI isn't serving HTML)
     templates_exist = os.path.isdir("templates")
     files = os.listdir("templates") if templates_exist else []
     return {"templates_exist": templates_exist, "templates_files": files}
