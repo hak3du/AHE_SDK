@@ -26,8 +26,8 @@ app = FastAPI(
 # ---------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins
-    allow_credentials=False,  # Set to False to avoid browser CORS errors
+    allow_origins=["*"],  # allow all origins
+    allow_credentials=False,  # avoid browser CORS errors
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -75,13 +75,13 @@ async def encrypt(req: EncryptRequest):
         logger.info("[ENCRYPT] Processing request...")
         data = encrypt_message(req.message, req.password)
 
-        # Map backend return keys to Pydantic model
-        ciphertext_path = data.get("ciphertext") or data.get("encrypted")
+        # Force string output for JSON
+        ciphertext_path = str(data.get("ciphertext") or data.get("encrypted") or "")
 
-        return {
-            "status": "success",
-            "ciphertext_path": ciphertext_path,  # matches EncryptResponse
-        }
+        return EncryptResponse(
+            status="success",
+            ciphertext_path=ciphertext_path
+        )
 
     except Exception as e:
         logger.error(f"[ENCRYPT ERROR] {str(e)}")
@@ -96,13 +96,13 @@ async def decrypt(req: DecryptRequest):
         logger.info("[DECRYPT] Processing request...")
         data = decrypt_latest(req.password)
 
-        # Map backend return keys to Pydantic model
-        decrypted_message = data.get("decrypted_message") or data.get("decrypted")
+        # Force string output for JSON
+        decrypted_message = str(data.get("decrypted_message") or data.get("decrypted") or "")
 
-        return {
-            "status": "success",
-            "decrypted_message": decrypted_message,  # matches DecryptResponse
-        }
+        return DecryptResponse(
+            status="success",
+            decrypted_message=decrypted_message
+        )
 
     except Exception as e:
         logger.error(f"[DECRYPT ERROR] {str(e)}")
