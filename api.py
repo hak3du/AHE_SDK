@@ -26,8 +26,8 @@ app = FastAPI(
 # ---------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=False,  # Set to False to avoid browser CORS errors
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -67,7 +67,7 @@ async def health_check():
     return {"status": "healthy"}
 
 # ---------------------------
-# ENCRYPT / DECRYPT ROUTES
+# ENCRYPT ROUTE
 # ---------------------------
 @app.post("/encrypt", response_model=EncryptResponse)
 async def encrypt(req: EncryptRequest):
@@ -75,32 +75,35 @@ async def encrypt(req: EncryptRequest):
         logger.info("[ENCRYPT] Processing request...")
         data = encrypt_message(req.message, req.password)
 
-        # ---- ADDITION: Map key to match frontend ----
-        encrypted_path = data.get("ciphertext")
+        # Map backend return keys to Pydantic model
+        ciphertext_path = data.get("ciphertext") or data.get("encrypted")
 
         return {
             "status": "success",
-            "encrypted": encrypted_path,
+            "ciphertext_path": ciphertext_path,  # matches EncryptResponse
         }
-        # ---------------------------------------------
+
     except Exception as e:
         logger.error(f"[ENCRYPT ERROR] {str(e)}")
         raise HTTPException(status_code=500, detail="Encryption failed")
 
+# ---------------------------
+# DECRYPT ROUTE
+# ---------------------------
 @app.post("/decrypt", response_model=DecryptResponse)
 async def decrypt(req: DecryptRequest):
     try:
         logger.info("[DECRYPT] Processing request...")
         data = decrypt_latest(req.password)
 
-        # ---- ADDITION: Map key to match frontend ----
-        decrypted_msg = data.get("decrypted_message") or data.get("decrypted")
+        # Map backend return keys to Pydantic model
+        decrypted_message = data.get("decrypted_message") or data.get("decrypted")
 
         return {
             "status": "success",
-            "decrypted": decrypted_msg,
+            "decrypted_message": decrypted_message,  # matches DecryptResponse
         }
-        # ---------------------------------------------
+
     except Exception as e:
         logger.error(f"[DECRYPT ERROR] {str(e)}")
         raise HTTPException(status_code=500, detail="Decryption failed")
