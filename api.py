@@ -26,8 +26,8 @@ app = FastAPI(
 # ---------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # allow all origins
-    allow_credentials=False,  # avoid browser CORS errors
+    allow_origins=["*"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -67,7 +67,7 @@ async def health_check():
     return {"status": "healthy"}
 
 # ---------------------------
-# ENCRYPT ROUTE
+# ENCRYPT / DECRYPT ROUTES
 # ---------------------------
 @app.post("/encrypt", response_model=EncryptResponse)
 async def encrypt(req: EncryptRequest):
@@ -75,34 +75,35 @@ async def encrypt(req: EncryptRequest):
         logger.info("[ENCRYPT] Processing request...")
         data = encrypt_message(req.message, req.password)
 
-        # Force string output for JSON
-        ciphertext_path = str(data.get("ciphertext") or data.get("encrypted") or "")
-
-        return EncryptResponse(
-            status="success",
-            ciphertext_path=ciphertext_path
-        )
+        # Return all required fields to match EncryptResponse model
+        return {
+            "status": "success",
+            "ciphertext_path": data.get("ciphertext_path", ""),
+            "metadata_path": data.get("metadata_path", ""),
+            "pqc_profile": data.get("pqc_profile", ""),
+            "entropy_score": data.get("entropy_score", 0.0),
+            "anomaly_detected": data.get("anomaly_detected", False)
+        }
 
     except Exception as e:
         logger.error(f"[ENCRYPT ERROR] {str(e)}")
         raise HTTPException(status_code=500, detail="Encryption failed")
 
-# ---------------------------
-# DECRYPT ROUTE
-# ---------------------------
 @app.post("/decrypt", response_model=DecryptResponse)
 async def decrypt(req: DecryptRequest):
     try:
         logger.info("[DECRYPT] Processing request...")
         data = decrypt_latest(req.password)
 
-        # Force string output for JSON
-        decrypted_message = str(data.get("decrypted_message") or data.get("decrypted") or "")
-
-        return DecryptResponse(
-            status="success",
-            decrypted_message=decrypted_message
-        )
+        # Return all required fields to match DecryptResponse model
+        return {
+            "status": "success",
+            "decrypted_message": data.get("decrypted_message", ""),
+            "metadata_path": data.get("metadata_path", ""),
+            "pqc_profile": data.get("pqc_profile", ""),
+            "entropy_score": data.get("entropy_score", 0.0),
+            "anomaly_detected": data.get("anomaly_detected", False)
+        }
 
     except Exception as e:
         logger.error(f"[DECRYPT ERROR] {str(e)}")
