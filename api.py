@@ -1,7 +1,5 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
 from core.core import encrypt_message, decrypt_latest
 from logger import logger
 from schemas import (
@@ -23,13 +21,12 @@ app = FastAPI(
 )
 
 # ---------------------------
-# CORS CONFIGURATION (Universal)
+# CORS CONFIGURATION
 # ---------------------------
-origins = ["*"]  # Allow all origins for testing; can replace with specific domains later
-
+# Allow any origin (so JS can call from anywhere, including local HTML)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -53,22 +50,6 @@ def custom_openapi():
 app.openapi = custom_openapi
 
 # ---------------------------
-# STATIC FILES / TEMPLATES
-# ---------------------------
-# Serve static assets if you have them in templates/static
-if os.path.isdir("templates/static"):
-    app.mount("/static", StaticFiles(directory="templates/static"), name="static")
-
-@app.get("/", response_class=HTMLResponse)
-async def serve_index():
-    index_path = os.path.join("templates", "index.html")
-    if os.path.isfile(index_path):
-        with open(index_path, "r", encoding="utf-8") as f:
-            return HTMLResponse(content=f.read(), status_code=200)
-    else:
-        return HTMLResponse(content="index.html not found", status_code=404)
-
-# ---------------------------
 # HEALTH CHECK
 # ---------------------------
 @app.get("/health", response_model=HealthResponse)
@@ -83,13 +64,10 @@ async def encrypt(req: EncryptRequest):
     try:
         logger.info("[ENCRYPT] Processing request...")
         data = encrypt_message(req.message, req.password)
+        # Match exactly what JS expects
         return {
             "status": "success",
-            "ciphertext_path": data.get("ciphertext_path"),
-            "metadata_path": data.get("metadata_path"),
-            "pqc_profile": data.get("pqc_profile"),
-            "entropy_score": data.get("entropy_score"),
-            "anomaly_detected": data.get("anomaly_detected")
+            "encrypted": data.get("ciphertext_path"),  # this is what JS reads
         }
     except Exception as e:
         logger.error(f"[ENCRYPT ERROR] {str(e)}")
@@ -100,12 +78,10 @@ async def decrypt(req: DecryptRequest):
     try:
         logger.info("[DECRYPT] Processing request...")
         data = decrypt_latest(req.password)
+        # Match exactly what JS expects
         return {
             "status": "success",
-            "decrypted_message": data.get("decrypted_message"),
-            "pqc_profile": data.get("pqc_profile"),
-            "entropy_score": data.get("entropy_score"),
-            "anomaly_detected": data.get("anomaly_detected")
+            "decrypted": data.get("decrypted_message"),
         }
     except Exception as e:
         logger.error(f"[DECRYPT ERROR] {str(e)}")
