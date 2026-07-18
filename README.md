@@ -1,129 +1,170 @@
-Adaptive Hashing Encryption (AHE) SDK
+# 🛡️ Adaptive Hashing Encryption (Hybrid Quantum Encryption Kit)
 
-Quantum-Safe, Anomaly-Driven Encryption for the Next Generation
-
-
----
-
-🚀 Features
-
-✅ Quantum-Safe (Kyber PQC)
-
-✅ Adaptive Hashing + Entropy-based Security
-
-✅ Zero Knowledge Assurance
-
-✅ Anomaly Detection & Logging
-
-✅ FastAPI REST API
-
-✅ Cross-Platform Support (Windows, Linux, macOS)
-
+> **Adaptive, modular cryptographic software exploring secure encryption workflows, post-quantum primitives, and intelligent security engineering.**
 
 ---
 
-📂 Project Structure
+## 🚀 Overview
 
+Adaptive Hashing Encryption (AHE) is a Python-based software development kit designed to explore modern cryptographic engineering through a modular architecture. The project combines symmetric encryption, post-quantum cryptographic components, secure key management, anomaly monitoring, and RESTful APIs into a unified platform for research, prototyping, and secure application development.
+
+Rather than focusing on a single encryption algorithm, AHE provides an extensible framework where multiple security components can work together while remaining modular and independently maintainable.
+
+---
+
+# ✨ Highlights
+
+* 🔐 Adaptive encryption workflows
+* ⚛️ Post-Quantum Cryptography integration (Kyber/liboqs)
+* 🔑 Secure key derivation
+* 📊 Entropy-aware security components
+* 🛡️ Secure storage support
+* 🌐 FastAPI REST interface
+* 📜 Security logging
+* 🐳 Docker support
+* 🖥️ Cross-platform compatibility
+* 🧩 Modular architecture
+
+---
+
+# 🏗️ Architecture
+
+```text
+                Client
+                   │
+            FastAPI Interface
+                   │
+        ┌──────────┴──────────┐
+        │                     │
+ Encryption Engine      Security Services
+        │                     │
+ ┌──────┴──────┐       ┌──────┴──────┐
+ │             │       │             │
+AES        PQC Layer  Logging   Secure Storage
+ │             │
+ └──────┬──────┘
+        │
+ Key Derivation
+        │
+ Adaptive Hashing
+```
+
+---
+
+# 📂 Project Structure
+
+```text
 AHE_SDK/
-├── api.py             # FastAPI entry point
-├── core/              # Core encryption engine
-├── crypto/            # AES & PQC cryptographic logic
-├── kdf/               # Key derivation functions
-├── utils/             # Entropy & anomaly tools
-├── secure_storage/    # Encrypted files & metadata
-├── tests/             # Unit tests
-├── logger.py          # Logging utility
-├── requirements.txt   # Dependencies
+├── aes/
+├── core/
+├── crypto/
+├── kdf/
+├── pqc/
+├── secure_storage/
+├── templates/
+├── tests/
+├── utils/
+├── api.py
+├── sdk.py
+├── main.py
 └── README.md
-
+```
 
 ---
 
-📦 Installation
+# ⚡ Installation
 
-1. Clone the Repository
-
-git clone https://github.com/YOUR_USERNAME/AHE_SDK.git
+```bash
+git clone https://github.com/hak3du/AHE_SDK.git
 cd AHE_SDK
 
-2. Create Virtual Environment
-
-# Linux/Mac
-python3 -m venv ahe_env
-source ahe_env/bin/activate
+python -m venv venv
 
 # Windows
-python -m venv ahe_env
-ahe_env\Scripts\activate
+venv\Scripts\activate
 
-3. Install Dependencies
+# Linux/macOS
+source venv/bin/activate
 
 pip install -r requirements.txt
-
-
----
-
-▶ Run the API
-
-uvicorn api:app --host 0.0.0.0 --port 8000 --reload
-
-API Docs:
-Once running, visit:
-
-Swagger UI: http://127.0.0.1:8000/docs
-
-ReDoc: http://127.0.0.1:8000/redoc
-
-
+```
 
 ---
 
-✅ API Endpoints
+# ▶️ Running the API
 
-Method	Endpoint	Description
+```bash
+uvicorn api:app --reload
+```
 
-GET	/health	Check API health
-POST	/encrypt	Encrypt a message
-POST	/decrypt	Decrypt latest message
+Documentation becomes available at:
 
-
-
----
-
-🔐 Encrypt Example
-
-curl -X POST "http://127.0.0.1:8000/encrypt" \
--H "Content-Type: application/json" \
--d '{"message": "Hello World", "password": "strong_pass"}'
-
+* 📘 `/docs`
+* 📙 `/redoc`
 
 ---
 
-🔓 Decrypt Example
+# 🔐 API Endpoints
 
-curl -X POST "http://127.0.0.1:8000/decrypt" \
--H "Content-Type: application/json" \
--d '{"password": "strong_pass"}'
-
+| Method | Endpoint   | Description    |
+| ------ | ---------- | -------------- |
+| GET    | `/health`  | Service health |
+| POST   | `/encrypt` | Encrypt data   |
+| POST   | `/decrypt` | Decrypt data   |
 
 ---
 
-🧪 Run Tests
+# 🧪 Testing
 
+```bash
 pytest tests/
-
+```
 
 ---
 
-🐳 Docker Support (Optional)
+# 🐳 Docker
 
+Build:
+
+```bash
 docker build -t ahe_sdk .
-docker run -p 8000:8000 ahe_sdk
+```
 
+Run:
+
+```bash
+docker run -p 8000:8000 ahe_sdk
+```
 
 ---
 
-📜 License
+# 🛣️ Roadmap
 
-⚠ License: Proprietary – All rights reserved.
-Unauthorized reproduction or distribution is prohibited.
+* ✅ Modular encryption engine
+* ✅ FastAPI integration
+* ✅ Post-Quantum cryptography support
+* 🔄 Performance benchmarking
+* 🔄 Extended automated testing
+* 🔄 Enhanced API documentation
+* 🔄 Plugin architecture
+* 🔄 Additional cryptographic algorithms
+
+---
+
+# 🤝 Contributing
+
+Contributions, issues, feature requests, and constructive feedback are welcome. Please open an issue before submitting significant architectural changes so they can be discussed.
+
+---
+
+# 📄 License
+
+This repository is released under the license included with this project. See the `LICENSE` file for details.
+
+---
+
+## 💡 Engineering Philosophy
+
+> Secure software is more than algorithms. It is the discipline of building systems where security, performance, maintainability, and simplicity reinforce one another.
+
+Adaptive Hashing Encryption is an ongoing exploration of that philosophy.
